@@ -2,7 +2,6 @@
 Ionic 4 - Build iOS, Android & Web Apps with Ionic & Angular (Udemy)
 
 - npm install
-- npx cap init
 - ng build
 - npx add android
 - npx add ios
