@@ -1,0 +1,8 @@
+{
+  "appId": "com.PairBnB.app",
+  "appName": "PairBnB",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "cordova": {}
+}
