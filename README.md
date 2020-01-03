@@ -3,8 +3,8 @@ Ionic 4 - Build iOS, Android & Web Apps with Ionic & Angular (Udemy)
 
 - npm install
 - ng build
-- npx add android
-- npx add ios
+- npx cap add android
+- npx cap add ios
 
 ADD <android:userCleartextTraffic="true"> -> AndroidManifest.xml
 
