@@ -18,4 +18,5 @@ export class AuthGuard implements CanLoad {
     }
     return this.authService.UserIsAuthenticated;
   }
+
 }

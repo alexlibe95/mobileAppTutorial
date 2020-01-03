@@ -13,6 +13,8 @@ import { AuthService } from './auth/auth.service';
   styleUrls: ['app.component.scss']
 })
 export class AppComponent {
+  isActivated: boolean;
+
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -34,4 +36,9 @@ export class AppComponent {
     this.authService.logout();
     this.router.navigateByUrl('/auth');
   }
+
+  // ngDoCheck() {
+  //   this.isActivated = this.authService.UserIsAuthenticated;
+  // }
+
 }

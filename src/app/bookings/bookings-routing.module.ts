@@ -4,10 +4,12 @@ import { Routes, RouterModule } from '@angular/router';
 import { BookingsPage } from './bookings.page';
 
 const routes: Routes = [
+
   {
-    path: '',
+    path: 'tabs',
     component: BookingsPage
   }
+
 ];
 
 @NgModule({
