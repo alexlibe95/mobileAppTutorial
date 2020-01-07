@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Place } from './place.model';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class PlacesService {
       'https://i.picsum.photos/id/1029/500/500.jpg',
       149.99,
       this.today,
-      this.until
+      this.until,
+      'abc'
     ),
     new Place(
       'p2',
@@ -26,7 +28,8 @@ export class PlacesService {
       'https://i.picsum.photos/id/1048/500/500.jpg',
       110.00,
       this.today,
-      this.until
+      this.until,
+      'abc'
     ),
     new Place(
       'p3',
@@ -35,7 +38,8 @@ export class PlacesService {
       'https://i.picsum.photos/id/1075/500/500.jpg',
       89.99,
       this.today,
-      this.until
+      this.until,
+      'abc'
     ),
     new Place(
       'p4',
@@ -44,7 +48,8 @@ export class PlacesService {
       'https://i.picsum.photos/id/1076/500/500.jpg',
       120.00,
       this.today,
-      this.until
+      this.until,
+      'abc'
     ),
     new Place(
       'p5',
@@ -53,7 +58,8 @@ export class PlacesService {
       'https://i.picsum.photos/id/164/500/500.jpg',
       145.50,
       this.today,
-      this.until
+      this.until,
+      'abc'
     ),
     new Place(
       'p6',
@@ -62,7 +68,8 @@ export class PlacesService {
       'https://i.picsum.photos/id/1054/500/500.jpg',
       45.00,
       this.today,
-      this.until
+      this.until,
+      'abc'
     )
   ];
 
@@ -70,11 +77,25 @@ export class PlacesService {
     return [...this.Places];
   }
 
+  constructor( private authService: AuthService ) { }
+
   getPlace(id: string) {
     return {
       ...this.Places.find(p => p.id === id)
     };
   }
 
-  constructor() { }
+  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date) {
+    const newPlace = new Place(
+      Math.random().toString(),
+      title,
+      description,
+      'https://i.picsum.photos/id/1054/500/500.jpg',
+      price,
+      dateFrom,
+      dateTo,
+      this.authService.UserId
+    );
+    this.places.push(newPlace);
+  }
 }

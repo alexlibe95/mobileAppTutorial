@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class BookingsPage implements OnInit {
 
-  loadedBookings: Booking[]
+  loadedBookings: Booking[];
 
   constructor(
     private bookingService: BookingService,
