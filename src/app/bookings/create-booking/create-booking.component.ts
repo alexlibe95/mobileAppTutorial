@@ -22,8 +22,13 @@ export class CreateBookingComponent implements OnInit {
     const availableFrom = new Date(this.selectedPlace.availableFrom);
     const availableTo = new Date(this.selectedPlace.availableTo);
     if (this.selectedMode === 'random') {
-      this.startDate = new Date(availableFrom.getTime() + Math.random() * (availableTo.getTime() - 7 * 24 * 60 * 1000 - availableFrom.getTime())).toISOString();
-      this.endDate = new Date(new Date(this.startDate).getTime() + Math.random() * (new Date(this.startDate).getTime() + 6 * 24 * 60 * 60 * 1000 - new Date(this.startDate).getTime())).toISOString();
+      this.startDate = new Date(
+        availableFrom.getTime() + Math.random() * (availableTo.getTime() - 7 * 24 * 60 * 1000 - availableFrom.getTime())
+        ).toISOString();
+      this.endDate = new Date(
+        new Date(this.startDate).getTime()
+        + Math.random() * (new Date(this.startDate).getTime() + 6 * 24 * 60 * 60 * 1000 - new Date(this.startDate).getTime())
+        ).toISOString();
     }
 
   }
@@ -33,7 +38,7 @@ export class CreateBookingComponent implements OnInit {
   }
 
   onBookPlace() {
-    if (!this.form.valid || this.form.value['date-from']>this.form.value['date-to']){
+    if (!this.form.valid || this.form.value['date-from'] > this.form.value['date-to']) {
       return;
     }
 

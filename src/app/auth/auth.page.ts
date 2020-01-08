@@ -36,10 +36,10 @@ export class AuthPage implements OnInit {
           loadingEl.dismiss();
           this.router.navigateByUrl('/places/tabs/discover');
         }, 1000);
-      })
+      });
   }
 
-  onSubmit(form: NgForm){
+  onSubmit(form: NgForm) {
     if (!form.valid) {
       return;
     }
