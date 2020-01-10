@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject } from 'rxjs';
+import { take, map, tap, delay, switchMap } from 'rxjs/operators';
+
 import { Place } from './place.model';
 import { AuthService } from '../auth/auth.service';
-import { BehaviorSubject } from 'rxjs';
-import { take, map, tap, delay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -81,7 +83,10 @@ export class PlacesService {
     return this.Places.asObservable();
   }
 
-  constructor( private authService: AuthService ) { }
+  constructor(
+    private authService: AuthService,
+    private http: HttpClient
+  ) { }
 
   getPlace(id: string) {
     return this.Places.pipe(take(1), map(places => {
@@ -90,6 +95,7 @@ export class PlacesService {
   }
 
   addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date) {
+    let generatedId: string;
     const newPlace = new Place(
       Math.random().toString(),
       title,
@@ -100,13 +106,30 @@ export class PlacesService {
       dateTo,
       this.authService.UserId
     );
-    return this.Places.pipe(
+    return this.http
+    .post<{name: string}>('https://ionic-angular-mobile-1c42d.firebaseio.com/offered-places.json',
+    {
+      ...newPlace,
+      id: null
+    })
+    .pipe(
+      switchMap(resData => {
+        generatedId = resData.name;
+        return this.Places;
+      }),
       take(1),
-      delay(1000),
-      tap (places => {
+      tap(places => {
+        newPlace.id = generatedId;
         this.Places.next(places.concat(newPlace));
       })
     );
+    // return this.Places.pipe(
+    //   take(1),
+    //   delay(1000),
+    //   tap (places => {
+    //     this.Places.next(places.concat(newPlace));
+    //   })
+    // );
   }
 
   updatePlace(placeId: string, title: string, description: string) {
