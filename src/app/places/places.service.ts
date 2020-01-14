@@ -42,15 +42,15 @@ export class PlacesService {
     ).pipe(
       map(placeData => {
         return new Place(
-          id, 
-          placeData.title, 
-          placeData.description, 
-          placeData.imgUrl, 
-          placeData.price, 
-          new Date(placeData.availableFrom), 
-          new Date(placeData.availableTo), 
+          id,
+          placeData.title,
+          placeData.description,
+          placeData.imgUrl,
+          placeData.price,
+          new Date(placeData.availableFrom),
+          new Date(placeData.availableTo),
           placeData.userId
-        )
+        );
       })
     );
   }
@@ -125,9 +125,9 @@ export class PlacesService {
   updatePlace(placeId: string, title: string, description: string) {
     let updatedPlaces: Place[];
     return this.Places.pipe(
-      take(1), 
+      take(1),
       switchMap( places => {
-        if (!places || places.length == 0){
+        if (!places || places.length === 0) {
           return this.fetchPlaces();
         } else {
           return of(places);

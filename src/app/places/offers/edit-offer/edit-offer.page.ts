@@ -52,9 +52,9 @@ export class EditOfferPage implements OnInit, OnDestroy {
       }, error => {
         this.alertCtrl.create(
           {
-            header: 'An error occured!', 
+            header: 'An error occured!',
             message: 'Place could not be fetched. Please try again later',
-            buttons: [{text: 'Okay', handler:() => {
+            buttons: [{text: 'Okay', handler: () => {
               this.router.navigate(['/places/tabs/offers']);
             }}]
           }).then(alertEl => {
