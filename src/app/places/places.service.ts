@@ -39,23 +39,23 @@ export class PlacesService {
 
   getPlace(id: string) {
     return this.http
-    .get<PlaceData>(
-      `https://ionic-angular-mobile-1c42d.firebaseio.com/offered-places/${id}.json`
-    ).pipe(
-      map(placeData => {
-        return new Place(
-          id,
-          placeData.title,
-          placeData.description,
-          placeData.imgUrl,
-          placeData.price,
-          new Date(placeData.availableFrom),
-          new Date(placeData.availableTo),
-          placeData.userId,
-          placeData.location
-        );
-      })
-    );
+      .get<PlaceData>(
+        `https://ionic-angular-mobile-1c42d.firebaseio.com/offered-places/${id}.json`
+      ).pipe(
+        map(placeData => {
+          return new Place(
+            id,
+            placeData.title,
+            placeData.description,
+            placeData.imgUrl,
+            placeData.price,
+            new Date(placeData.availableFrom),
+            new Date(placeData.availableTo),
+            placeData.userId,
+            placeData.location
+          );
+        })
+      );
   }
 
   fetchPlaces() {
@@ -82,9 +82,9 @@ export class PlacesService {
         }
         return places;
       }),
-      tap(places => {
-        this.Places.next(places);
-      })
+        tap(places => {
+          this.Places.next(places);
+        })
       );
   }
 
@@ -138,7 +138,7 @@ export class PlacesService {
     let updatedPlaces: Place[];
     return this.Places.pipe(
       take(1),
-      switchMap( places => {
+      switchMap(places => {
         if (!places || places.length === 0) {
           return this.fetchPlaces();
         } else {
@@ -161,10 +161,10 @@ export class PlacesService {
           oldPlace.location
         );
         return this.http
-        .put(
-          `https://ionic-angular-mobile-1c42d.firebaseio.com/offered-places/${placeId}.json`,
-          { ...updatedPlaces[updatedPlaceIndex], id: null}
-        );
+          .put(
+            `https://ionic-angular-mobile-1c42d.firebaseio.com/offered-places/${placeId}.json`,
+            { ...updatedPlaces[updatedPlaceIndex], id: null }
+          );
       }),
       tap(() => {
         this.Places.next(updatedPlaces);
