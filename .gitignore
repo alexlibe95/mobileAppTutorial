@@ -31,4 +31,6 @@ npm-debug.log*
 /www
 /android
 
+/src/environments
+
 package-lock.json
