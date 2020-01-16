@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
-import { Capacitor, Plugins} from '@capacitor/core'
+import { Capacitor, Plugins} from '@capacitor/core';
 
 import { AuthService } from './auth/auth.service';
 

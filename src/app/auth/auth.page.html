@@ -31,7 +31,7 @@
         <ion-col size-md="6" offset-md="3">
           <!-- <ion-spinner color="primary" *ngIf="isLoading"></ion-spinner> *ngIf="!isLoading" (below @ion-button)-->
           <ion-button type="button" color="primary" fill="clear" expand="block" (click)="onSwitchAuthMode()">Switch to {{ isLogin ? 'Signup' : 'Login' }}</ion-button>
-          <ion-button type="submit" color="primary" (click)="onLogin()" expand="block" [disabled]="!form.valid">Login</ion-button>
+          <ion-button type="submit" color="primary" expand="block" [disabled]="!form.valid">{{ isLogin ? 'Login' : 'SignUp' }}</ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>

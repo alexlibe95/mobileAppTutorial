@@ -1,9 +1,9 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { ModalController, ActionSheetController, AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { Capacitor, Plugins} from '@capacitor/core'
+import { Capacitor, Plugins} from '@capacitor/core';
 
 import { environment } from '../../../../environments/environment';
 import { MapModalComponent } from '../../map-modal/map-modal.component';
@@ -16,6 +16,7 @@ import { PlaceLocation, Coordinates } from '../../../places/location.model';
 })
 export class LocationPickerComponent implements OnInit {
   @Output() locationPick = new EventEmitter<PlaceLocation>();
+  @Input() showPreview = false;
   selectedLocationImage: string;
   isLoading = false;
 
@@ -74,7 +75,7 @@ export class LocationPickerComponent implements OnInit {
     .catch(error => {
       this.isLoading = false;
       this.showErrorAlert();
-    })
+    });
   }
 
   private openMap() {
@@ -115,13 +116,13 @@ export class LocationPickerComponent implements OnInit {
 
   private createPlace(lat: number, lng: number) {
     const pickedLocation: PlaceLocation = {
-      lat: lat,
-      lng: lng,
+      lat,
+      lng,
       address: null,
       staticMapImageUrl: null
     };
     this.isLoading = true;
-        this.getAddress(lat, lng)
+    this.getAddress(lat, lng)
         .pipe(
           switchMap(address => {
             pickedLocation.address = address;
@@ -146,7 +147,7 @@ export class LocationPickerComponent implements OnInit {
       }
     ).then(alertEl => {
       alertEl.present();
-    })
+    });
   }
 
 }

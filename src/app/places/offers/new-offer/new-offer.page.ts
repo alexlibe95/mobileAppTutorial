@@ -5,6 +5,7 @@ import { LoadingController } from '@ionic/angular';
 
 import { PlacesService } from '../../places.service';
 import { PlaceLocation } from '../../location.model';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-offer',
@@ -46,35 +47,51 @@ export class NewOfferPage implements OnInit {
       location: new FormControl(null, {
         updateOn: 'blur',
         validators: [Validators.required]
+      }),
+      image: new FormControl(null, {
+        updateOn: 'blur'
       })
     });
   }
 
   onCreateOffer() {
-    if (!this.form.valid) {
+    if (!this.form.valid || !this.form.get('image').value) {
       return;
     }
     this.loadingCtrl.create({
       message: 'Creating place...'
     }).then(loadingEl => {
       loadingEl.present();
-      this.placesService.addPlace(
-        this.form.value.title,
-        this.form.value.description,
-        +this.form.value.price,
-        new Date (this.form.value.dateFrom),
-        new Date (this.form.value.dateTo),
-        this.form.value.location
-      ).subscribe(() => {
+      this.placesService.uploadImage(
+        this.form.get('image').value
+      )
+      .pipe(
+        switchMap(uploadRes => {
+          return this.placesService.addPlace(
+            this.form.value.title,
+            this.form.value.description,
+            +this.form.value.price,
+            new Date (this.form.value.dateFrom),
+            new Date (this.form.value.dateTo),
+            this.form.value.location,
+            uploadRes.imageUrl
+          );
+        })
+      )
+      .subscribe(() => {
         loadingEl.dismiss();
+        this.form.reset();
+        console.log('Successfully created');
+        this.router.navigate(['/places/tabs/offers']);
       });
-      this.form.reset();
-      console.log('Successfully created');
-      this.router.navigate(['/places/tabs/offers']);
     });
   }
 
   onLocationPicked(location: PlaceLocation) {
     this.form.patchValue({location});
+  }
+
+  onImagePicked(image: string | File) {
+    this.form.patchValue({image});
   }
 }
