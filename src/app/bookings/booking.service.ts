@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { take, tap, delay, switchMap, map } from 'rxjs/operators';
+import { take, tap, switchMap, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
 import { AuthService } from '../auth/auth.service';
@@ -26,7 +26,6 @@ export class BookingService {
 
   private Bookings = new BehaviorSubject<Booking[]>([]);
 
-
   get bookings() {
     return this.Bookings.asObservable();
   }
@@ -47,39 +46,59 @@ export class BookingService {
     dateTo: Date
   ) {
     let generatedId: string;
-    const newBooking = new Booking(
-      Math.random().toString(),
-      placeId,
-      this.authService.UserId,
-      placeTitle,
-      placeImage,
-      firstName,
-      lastName,
-      guestNumber,
-      dateFrom,
-      dateTo
-    );
-    return this.http.post<{name: string}>(
-      'https://ionic-angular-mobile-1c42d.firebaseio.com/bookings.json',
-      {...newBooking, id: null}
-    ).pipe(
-      switchMap(resData => {
-        generatedId = resData.name;
-        return this.bookings;
-      }),
+    let newBooking: Booking;
+    let fetchedUserId: string;
+    return this.authService.UserId.pipe(
       take(1),
-      tap(bookings => {
-        newBooking.id = generatedId;
-        this.Bookings.next(bookings.concat(newBooking));
+      switchMap(UserId => {
+        if (!UserId) {
+         throw new Error('No user Id found!');
+        }
+        fetchedUserId = UserId;
+        return this.authService.token;
+    }),
+    take(1),
+    switchMap(token => {
+      newBooking = new Booking(
+        Math.random().toString(),
+        placeId,
+        fetchedUserId,
+        placeTitle,
+        placeImage,
+        firstName,
+        lastName,
+        guestNumber,
+        dateFrom,
+        dateTo
+        );
+      return this.http.post<{name: string}>(
+        `https://ionic-angular-mobile-1c42d.firebaseio.com/bookings.json?auth=${token}`,
+        {...newBooking, id: null}
+      );
+    }),
+    switchMap(
+      resData => {
+      generatedId = resData.name;
+      return this.bookings;
+      }
+    ),
+    take(1),
+    tap(
+      bookings => {
+      newBooking.id = generatedId;
+      this.Bookings.next(bookings.concat(newBooking));
       })
     );
-
   }
 
   cancelBooking(bookingId: string)  {
-    return this.http.delete(
-      `https://ionic-angular-mobile-1c42d.firebaseio.com/bookings/${bookingId}.json`
-    ).pipe(
+    return this.authService.token.pipe(
+      take(1),
+      switchMap(token => {
+        return this.http.delete(
+          `https://ionic-angular-mobile-1c42d.firebaseio.com/bookings/${bookingId}.json?auth=${token}`
+        );
+      }),
       switchMap(() => {
         return this.bookings;
       }),
@@ -91,32 +110,46 @@ export class BookingService {
   }
 
   fetchBookings() {
-    return this.http.get<{[key: string]: BookingData}>(
-      `https://ionic-angular-mobile-1c42d.firebaseio.com/bookings.json?orderBy="userId"&equalTo="${this.authService.UserId}"`
-    ).pipe(map(bookingData => {
-      const bookings = [];
-      for (const key in bookingData) {
-        if (bookingData.hasOwnProperty(key)) {
-          bookings.push(
-            new Booking(
-              key,
-              bookingData[key].placeId,
-              bookingData[key].userId,
-              bookingData[key].placeTitle,
-              bookingData[key].placeImage,
-              bookingData[key].firstName,
-              bookingData[key].lastName,
-              bookingData[key].guestNumber,
-              new Date(bookingData[key].bookedFrom),
-              new Date(bookingData[key].bookedTo)
-            )
-          );
+    let fetchedUserId: string;
+    return this.authService.UserId.pipe(
+      take(1),
+      switchMap(UserId => {
+        if (!UserId) {
+          throw new Error('User not found!');
         }
-      }
-      return bookings;
-    }), tap(bookings => {
-      this.Bookings.next(bookings);
-    })
+        fetchedUserId = UserId;
+        return this.authService.token;
+      }),
+      take(1),
+      switchMap(token => {
+        return this.http.get<{[key: string]: BookingData}>(
+          `https://ionic-angular-mobile-1c42d.firebaseio.com/bookings.json?orderBy="userId"&equalTo="${fetchedUserId}"&auth=${token}`
+        );
+      }),
+      map(bookingData => {
+        const bookings = [];
+        for (const key in bookingData) {
+          if (bookingData.hasOwnProperty(key)) {
+            bookings.push(
+              new Booking(
+                key,
+                bookingData[key].placeId,
+                bookingData[key].userId,
+                bookingData[key].placeTitle,
+                bookingData[key].placeImage,
+                bookingData[key].firstName,
+                bookingData[key].lastName,
+                bookingData[key].guestNumber,
+                new Date(bookingData[key].bookedFrom),
+                new Date(bookingData[key].bookedTo)
+              )
+            );
+          }
+        }
+        return bookings;
+      }), tap(bookings => {
+        this.Bookings.next(bookings);
+      })
     );
   }
 }

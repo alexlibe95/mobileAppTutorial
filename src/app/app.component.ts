@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { Capacitor, Plugins} from '@capacitor/core';
+import { Subscription } from 'rxjs';
 
 import { AuthService } from './auth/auth.service';
 
@@ -11,8 +12,9 @@ import { AuthService } from './auth/auth.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss']
 })
-export class AppComponent {
-  isActivated: boolean;
+export class AppComponent implements OnInit, OnDestroy {
+  private authSub: Subscription;
+  private previousAuthState = false;
 
   constructor(
     private platform: Platform,
@@ -30,13 +32,22 @@ export class AppComponent {
     });
   }
 
-  onLogout() {
-    this.authService.logout();
-    this.router.navigateByUrl('/auth');
+  ngOnInit() {
+    this.authSub = this.authService.UserIsAuthenticated.subscribe(isAuth => {
+      if (!isAuth && this.previousAuthState !== isAuth) {
+        this.router.navigateByUrl('/auth');
+      }
+      this.previousAuthState = isAuth;
+    });
   }
 
-  // ngDoCheck() {
-  //   this.isActivated = this.authService.UserIsAuthenticated;
-  // }
+  onLogout() {
+    this.authService.logout();
+  }
 
+  ngOnDestroy() {
+    if (this.authSub) {
+      this.authSub.unsubscribe();
+    }
+  }
 }

@@ -33,7 +33,7 @@ npm-debug.log*
 
 /src/environments
 
-
+keystore.jks
 
 
 package-lock.json

@@ -1,5 +1,5 @@
 {
-  "appId": "com.PairBnB.app",
+  "appId": "com.alexlibero.pairbnb",
   "appName": "PairBnB",
   "bundledWebRuntime": false,
   "npmClient": "npm",

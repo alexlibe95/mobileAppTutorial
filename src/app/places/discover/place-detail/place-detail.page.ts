@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavController, ModalController, ActionSheetController, LoadingController, AlertController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { switchMap, take } from 'rxjs/operators';
 
 import { PlacesService } from '../../places.service';
 import { Place } from '../../place.model';
@@ -41,9 +42,18 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
         return;
       }
       this.isLoading = true;
-      this.placeSub = this.placesService.getPlace(paramMap.get('placeId')).subscribe(place => {
+      let fetchedUserId: string;
+      this.authService.UserId.pipe(
+        take(1),
+        switchMap(UserId => {
+        if (!UserId) {
+          throw new Error('Found no user!');
+        }
+        fetchedUserId = UserId;
+        return this.placesService.getPlace(paramMap.get('placeId'));
+      })).subscribe(place => {
         this.place = place;
-        this.isBookable = place.userId !== this.authService.UserId;
+        this.isBookable = place.userId !== fetchedUserId;
         this.isLoading = false;
       }, error => {
         this.alertCtrl.create(
